@@ -34,7 +34,11 @@ public class JsaopTestApplication {
         }
 
         List<CodeEntity> listEntity = JsoapParseContent.getEntity();
-        codeRepository.saveAll(listEntity);
+        for (CodeEntity entity: listEntity) {
+            if (entity.getCode1() != null && entity.getCode2() != null) {
+                codeRepository.save(entity);
+            }
+        }
         System.out.println("done");
     }
 }
