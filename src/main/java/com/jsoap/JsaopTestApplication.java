@@ -26,6 +26,7 @@ public class JsaopTestApplication {
     public static void main(String[] args) {
         SpringApplication.run(JsaopTestApplication.class, args);
         String pathToFiles = "src/data/pages";
+        String csvPath = "src/data/out/data.csv";
         Path path = Paths.get(pathToFiles);
         try {
             Files.walkFileTree(path, new CodeFileWalker());
@@ -34,11 +35,18 @@ public class JsaopTestApplication {
         }
 
         List<CodeEntity> listEntity = JsoapParseContent.getEntity();
-        for (CodeEntity entity: listEntity) {
-            if (entity.getCode1() != null && entity.getCode2() != null) {
-                codeRepository.save(entity);
+        try (CSVWriter writer = new CSVWriter(new FileWriter(csvPath))) {
+            for (CodeEntity entity : listEntity) {
+                if (entity.getCode1() != null && entity.getCode2() != null) {
+                    //codeRepository.save(entity);
+                    String[] pair = {entity.getCode1(), entity.getCode2()};
+                    writer.writeNext(pair);
+                }
             }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
+
         System.out.println("done");
     }
 }
